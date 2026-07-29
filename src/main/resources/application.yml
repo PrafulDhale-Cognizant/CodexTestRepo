@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: claim-check
+  jackson:
+    default-property-inclusion: non_null
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+server:
+  error:
+    include-message: never
