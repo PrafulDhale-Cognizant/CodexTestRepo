@@ -2,19 +2,22 @@ package com.flagship.claimcheck.service;
 
 import com.flagship.claimcheck.model.ClaimDecision.Status;
 import com.flagship.claimcheck.model.ClaimRequest;
+import com.flagship.claimcheck.domain.DuplicateClaimService;
+import com.flagship.claimcheck.domain.InMemoryClaimRepository;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AdjudicationServiceTest {
-    private final AdjudicationService service = new AdjudicationService();
+    private final AdjudicationService service = new AdjudicationService(new DuplicateClaimService(new InMemoryClaimRepository()));
 
     @Test void deniesAnExactLegacyDuplicate() {
         var claim = claim("CLM-111111", "MBR-10482", "PRV-4481", "99213", "2026-07-18", "185.00");
         var result = service.adjudicate(claim);
         assertThat(result.status()).isEqualTo(Status.DENIED);
         assertThat(result.duplicateMatch().claimId()).isEqualTo("CLM-902184");
+        assertThat(result.reasons()).extracting("code").containsExactly("DUPLICATE_EXACT_MATCH");
     }
 
     @Test void approvesAnEligibleUniqueClaim() {

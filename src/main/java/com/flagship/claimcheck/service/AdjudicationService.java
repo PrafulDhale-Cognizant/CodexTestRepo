@@ -3,6 +3,8 @@ package com.flagship.claimcheck.service;
 import com.flagship.claimcheck.model.ClaimDecision;
 import com.flagship.claimcheck.model.ClaimDecision.*;
 import com.flagship.claimcheck.model.ClaimRequest;
+import com.flagship.claimcheck.domain.ClaimRecord;
+import com.flagship.claimcheck.domain.DuplicateClaimService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,11 +14,11 @@ import java.util.*;
 @Service
 public class AdjudicationService {
     private static final BigDecimal REVIEW_LIMIT = new BigDecimal("5000.00");
-    private final List<LegacyClaim> legacyClaims = List.of(
-        new LegacyClaim("CLM-902184", "MBR-10482", "PRV-4481", "99213", LocalDate.of(2026, 7, 18), new BigDecimal("185.00")),
-        new LegacyClaim("CLM-775091", "MBR-22019", "PRV-2204", "70553", LocalDate.of(2026, 7, 2), new BigDecimal("2400.00")),
-        new LegacyClaim("CLM-881426", "MBR-10482", "PRV-4481", "80053", LocalDate.of(2026, 6, 21), new BigDecimal("96.40"))
-    );
+    private final DuplicateClaimService duplicateClaimService;
+
+    public AdjudicationService(DuplicateClaimService duplicateClaimService) {
+        this.duplicateClaimService = duplicateClaimService;
+    }
 
     public ClaimDecision adjudicate(ClaimRequest request) {
         long start = System.nanoTime();
@@ -28,7 +30,8 @@ public class AdjudicationService {
         if (duplicate != null) {
             status = Status.DENIED;
             headline = "Potential duplicate detected";
-            reasons.add(new DecisionReason("DUP-001", "This claim matches a previously submitted claim.", Severity.ERROR));
+            reasons.add(new DecisionReason(DuplicateClaimService.EXACT_MATCH_REASON,
+                "This claim matches a previously submitted claim.", Severity.ERROR));
         } else if (request.amount().compareTo(REVIEW_LIMIT) > 0) {
             status = Status.REVIEW;
             headline = "Manual review required";
@@ -45,14 +48,11 @@ public class AdjudicationService {
     }
 
     private DuplicateMatch findDuplicate(ClaimRequest request) {
-        return legacyClaims.stream()
-            .filter(c -> c.memberId.equals(request.memberId()) && c.providerId.equalsIgnoreCase(request.providerId())
-                && c.procedureCode.equalsIgnoreCase(request.procedureCode()) && c.serviceDate.equals(request.serviceDate())
-                && c.amount.compareTo(request.amount()) == 0)
-            .findFirst().map(c -> new DuplicateMatch(c.claimId, "EXACT", 100, c.serviceDate.toString(), c.amount.toPlainString()))
+        var result = duplicateClaimService.findDuplicates(new ClaimRecord(request.claimId(), request.memberId(),
+            request.providerId(), request.procedureCode(), request.serviceDate(), request.amount()));
+        return result.matchedClaimIds().stream().findFirst()
+            .map(id -> new DuplicateMatch(id, result.classification().name(), 100,
+                request.serviceDate().toString(), request.amount().toPlainString()))
             .orElse(null);
     }
-
-    private record LegacyClaim(String claimId, String memberId, String providerId, String procedureCode,
-                               LocalDate serviceDate, BigDecimal amount) {}
 }
