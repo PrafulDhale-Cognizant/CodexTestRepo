@@ -27,7 +27,7 @@ form.addEventListener('submit', async (event) => {
 function renderDecision(d) {
   const reasons = d.reasons.map(r => `<div class="reason"><b>${escapeHtml(r.code)} · ${escapeHtml(r.severity)}</b><p>${escapeHtml(r.message)}</p></div>`).join('');
   const duplicate = d.duplicateMatch ? `<div class="reason"><b>Matched claim ${escapeHtml(d.duplicateMatch.claimId)}</b><p>${d.duplicateMatch.confidence}% exact match · ${escapeHtml(d.duplicateMatch.serviceDate)} · $${escapeHtml(d.duplicateMatch.amount)}</p></div>` : '';
-  result.innerHTML = `<div class="decision ${d.status}"><div class="decision-head"><span class="decision-badge">${escapeHtml(d.status)}</span><h2>${escapeHtml(d.headline)}</h2><span class="claim-ref">${escapeHtml(d.claimId)}</span></div>${reasons}${duplicate}<div class="decision-meta"><span>Processed in ${d.processingTimeMs} ms</span><span>Trace ${escapeHtml(d.traceId.slice(0, 8))}</span></div></div>`;
+  result.innerHTML = `<div class="decision ${d.status}"><div class="decision-head"><span class="decision-badge">${escapeHtml(d.status)}</span><h2>${escapeHtml(d.headline)}</h2><span class="claim-ref">${escapeHtml(d.claimId)}</span></div>${reasons}${duplicate}<div class="decision-meta"><span>Processed in ${d.processingTimeMs} ms</span><span>Correlation ${escapeHtml(d.correlationId.slice(0, 8))}</span></div></div>`;
 }
 
 function escapeHtml(value) {

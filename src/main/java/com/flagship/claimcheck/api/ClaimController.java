@@ -15,5 +15,8 @@ public class ClaimController {
 
     @PostMapping("/adjudicate")
     @ResponseStatus(HttpStatus.OK)
-    public ClaimDecision adjudicate(@Valid @RequestBody ClaimRequest claim) { return service.adjudicate(claim); }
+    public ClaimDecision adjudicate(@Valid @RequestBody ClaimRequest claim,
+                                    @RequestHeader(value = "X-Correlation-ID", required = false) String correlationId) {
+        return service.adjudicate(claim, correlationId);
+    }
 }

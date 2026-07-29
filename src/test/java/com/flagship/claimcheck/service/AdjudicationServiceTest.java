@@ -25,7 +25,7 @@ class AdjudicationServiceTest {
 
     @Test void routesHighValueClaimForReview() {
         var result = service.adjudicate(claim("CLM-111113", "MBR-99001", "PRV-1000", "99214", "2026-07-18", "5000.01"));
-        assertThat(result.status()).isEqualTo(Status.REVIEW);
+        assertThat(result.status()).isEqualTo(Status.PENDED);
         assertThat(result.reasons()).extracting("code").containsExactly("AMT-101");
     }
 

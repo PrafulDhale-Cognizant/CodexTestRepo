@@ -25,7 +25,20 @@ Open <http://localhost:8080>. The pre-filled example matches `CLM-902184` in the
 }
 ```
 
-Every response includes a decision status, coded reasons, processing time, timestamp, and trace ID. Exact matches also include the existing claim reference and match confidence.
+Every response includes a decision status, stable coded reasons, processing time, timestamp, and correlation ID. Exact matches also include the existing claim reference and match confidence. A caller-supplied `X-Correlation-ID` is preserved; otherwise the service creates one.
+
+`PENDED` is returned only when a rule cannot safely make a final automated decision. In this prototype, a unique claim above $5,000 produces `AMT-101`; exact duplicates remain denied (`DUP-001`), and claims within the limit remain approved. The service retains the decision, every relevant rule outcome, correlation ID, and only the procedure code, service date, amount, and any matched claim reference as analyst evidence.
+
+Workflow tooling can idempotently create or retrieve an analyst item after a pend:
+
+```http
+POST /internal/v1/review-work-items
+Content-Type: application/json
+
+{"claimId":"CLM-542890"}
+```
+
+The claim ID is the idempotency key: repeated calls return the same work item. Requests for claims without a persisted `PENDED` decision return `404`.
 
 ## Rules in this prototype
 

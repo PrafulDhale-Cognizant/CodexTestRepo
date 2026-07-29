@@ -15,4 +15,10 @@ public class ApiExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(e -> fields.put(e.getField(), e.getDefaultMessage()));
         return Map.of("status", 400, "error", "Validation failed", "timestamp", Instant.now(), "fields", fields);
     }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    Map<String, Object> notFound(NoSuchElementException ex) {
+        return Map.of("status", 404, "error", ex.getMessage(), "timestamp", Instant.now());
+    }
 }
