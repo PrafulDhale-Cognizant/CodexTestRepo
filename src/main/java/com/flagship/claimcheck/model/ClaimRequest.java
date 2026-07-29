@@ -10,5 +10,11 @@ public record ClaimRequest(
     @NotBlank String providerId,
     @NotBlank String procedureCode,
     @NotNull @PastOrPresent LocalDate serviceDate,
-    @NotNull @DecimalMin("0.01") @Digits(integer = 8, fraction = 2) BigDecimal amount
-) {}
+    @NotNull @DecimalMin("0.01") @Digits(integer = 8, fraction = 2) BigDecimal amount,
+    String benefitCode
+) {
+    public ClaimRequest(String claimId, String memberId, String providerId, String procedureCode,
+                        LocalDate serviceDate, BigDecimal amount) {
+        this(claimId, memberId, providerId, procedureCode, serviceDate, amount, null);
+    }
+}
