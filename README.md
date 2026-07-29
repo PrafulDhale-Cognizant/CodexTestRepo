@@ -44,3 +44,7 @@ docker build -t claim-check .
 ```
 
 Spring Boot Actuator exposes `/actuator/health` for deployment probes.
+
+## Production rollout
+
+The staged feature flags, promotion gates, reconciliation controls, accountable owners, and fail-closed dependency behavior are defined in [the rollout runbook](docs/rollout-runbook.md). No production flag may be advanced without satisfying that stage's entry criteria and recording the named owner's approval.
