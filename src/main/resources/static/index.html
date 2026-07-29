@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ClaimCheck — Real-time claim decisions</title>
+  <meta name="description" content="Real-time duplicate detection and eligibility pre-checks for claims teams.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="ClaimCheck home"><span class="brand-mark">C</span><span>Claim<span>Check</span></span></a>
+    <div class="top-actions"><span class="system-status"><i></i> All systems operational</span><button class="icon-button" aria-label="Notifications">♢</button><div class="avatar">AM</div></div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="eyebrow"><span>LIVE</span> REAL-TIME ADJUDICATION</div>
+      <h1>A decision in seconds.<br><em>Not tomorrow.</em></h1>
+      <p>Run instant duplicate detection and eligibility checks against your legacy claims data—without waiting for the overnight batch.</p>
+      <div class="metrics">
+        <div><strong>&lt; 1 sec</strong><small>Average response</small></div><div><strong>24 / 7</strong><small>Always available</small></div><div><strong>100%</strong><small>Decision traceability</small></div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="form-card">
+        <div class="card-heading"><div class="step">1</div><div><h2>Submit a claim</h2><p>Enter the claim details for an instant pre-adjudication decision.</p></div></div>
+        <form id="claim-form" novalidate>
+          <div class="field-grid">
+            <label>Claim ID <span>Required</span><input name="claimId" value="CLM-542890" pattern="CLM-[0-9]{6}" required><small>Format: CLM-######</small></label>
+            <label>Member ID <span>Required</span><input name="memberId" value="MBR-10482" pattern="MBR-[0-9]{5}" required></label>
+            <label>Provider ID <span>Required</span><input name="providerId" value="PRV-4481" required></label>
+            <label>Procedure code <span>Required</span><input name="procedureCode" value="99213" required></label>
+            <label>Date of service <span>Required</span><input name="serviceDate" type="date" value="2026-07-18" required></label>
+            <label>Claim amount <span>Required</span><div class="money"><b>$</b><input name="amount" type="number" step="0.01" min="0.01" value="185.00" required></div></label>
+          </div>
+          <button class="submit" type="submit"><span>Run claim check</span><b>→</b></button>
+          <p class="privacy">◆ Encrypted in transit · Claim details are not retained</p>
+        </form>
+      </div>
+
+      <aside class="result-card" id="result" aria-live="polite">
+        <div class="empty-state">
+          <div class="scan-icon"><i></i><i></i><span>✓</span></div>
+          <h2>Your decision will appear here</h2>
+          <p>Complete the claim details and run a check. We’ll return duplicate and eligibility results in real time.</p>
+          <div class="check-list"><span>✓ Duplicate claim detection</span><span>✓ Basic eligibility checks</span><span>✓ Structured decision reasons</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="how"><div><span class="mini">HOW IT WORKS</span><h2>From batch window to <em>right now.</em></h2></div><div class="flow"><article><b>01</b><h3>Submit</h3><p>A claim arrives from your portal or workflow.</p></article><i>→</i><article><b>02</b><h3>Check</h3><p>Rules run against the indexed legacy claim data.</p></article><i>→</i><article><b>03</b><h3>Decide</h3><p>A clear, auditable decision returns in seconds.</p></article></div></section>
+  </main>
+  <footer><div class="brand muted"><span class="brand-mark">C</span><span>ClaimCheck</span></div><p>Built for claims teams moving at the speed of care.</p><span>API v1.0 · Secure by design</span></footer>
+  <script src="/app.js"></script>
+</body></html>
