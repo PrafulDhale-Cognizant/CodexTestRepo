@@ -35,6 +35,13 @@ Every response includes a decision status, coded reasons, processing time, times
 
 These deliberately small, deterministic rules mirror the supplied hackathon scenario and create a clean seam where a production copybook adapter, member eligibility system, and externalized rules engine can be connected.
 
+Eligibility checks are exposed through `EligibilityService`. Each coverage date, member status,
+required-field, benefit, and procedure check implements `EligibilityRule` and emits a coded pass or
+failure result. Callers can select `STOP_ON_FIRST_FAILURE` for fast adjudication or
+`COLLECT_ALL_FAILURES` for a complete audit trail. Coverage effective and termination dates are
+inclusive; a missing termination date means that coverage is open-ended, while absent required
+legacy values fail closed with explicit reason codes.
+
 ## Test and package
 
 ```bash
