@@ -20,12 +20,14 @@ Open <http://localhost:8080>. The pre-filled example matches `CLM-902184` in the
   "memberId": "MBR-10482",
   "providerId": "PRV-4481",
   "procedureCode": "99213",
+  "diagnosisCode": "Z00.00",
+  "placeOfService": "11",
   "serviceDate": "2026-07-18",
   "amount": 185.00
 }
 ```
 
-Every response includes a decision status, coded reasons, processing time, timestamp, and trace ID. Exact matches also include the existing claim reference and match confidence.
+Every response includes an `APPROVED`, `DENIED`, `PENDED`, or `ERROR` decision status, stable coded reasons, explanations, processing time, timestamp, and correlation ID. Callers may supply that ID with `X-Correlation-ID`. Exact matches also include the existing claim reference and match confidence. Invalid or malformed requests return RFC 7807 `application/problem+json` responses.
 
 ## Rules in this prototype
 

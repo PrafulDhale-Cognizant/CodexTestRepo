@@ -14,7 +14,7 @@ form.addEventListener('submit', async (event) => {
       method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)
     });
     const payload = await response.json();
-    if (!response.ok) throw new Error(Object.values(payload.fields || {}).join(', ') || 'Unable to check claim');
+    if (!response.ok) throw new Error(Object.values(payload.errors || {}).join(', ') || payload.detail || 'Unable to check claim');
     renderDecision(payload);
   } catch (error) {
     result.innerHTML = `<div class="empty-state"><h2>We couldn’t run this check</h2><p>${escapeHtml(error.message)}</p><div class="check-list"><span>Please verify the details and try again.</span></div></div>`;
@@ -27,7 +27,7 @@ form.addEventListener('submit', async (event) => {
 function renderDecision(d) {
   const reasons = d.reasons.map(r => `<div class="reason"><b>${escapeHtml(r.code)} · ${escapeHtml(r.severity)}</b><p>${escapeHtml(r.message)}</p></div>`).join('');
   const duplicate = d.duplicateMatch ? `<div class="reason"><b>Matched claim ${escapeHtml(d.duplicateMatch.claimId)}</b><p>${d.duplicateMatch.confidence}% exact match · ${escapeHtml(d.duplicateMatch.serviceDate)} · $${escapeHtml(d.duplicateMatch.amount)}</p></div>` : '';
-  result.innerHTML = `<div class="decision ${d.status}"><div class="decision-head"><span class="decision-badge">${escapeHtml(d.status)}</span><h2>${escapeHtml(d.headline)}</h2><span class="claim-ref">${escapeHtml(d.claimId)}</span></div>${reasons}${duplicate}<div class="decision-meta"><span>Processed in ${d.processingTimeMs} ms</span><span>Trace ${escapeHtml(d.traceId.slice(0, 8))}</span></div></div>`;
+  result.innerHTML = `<div class="decision ${d.status}"><div class="decision-head"><span class="decision-badge">${escapeHtml(d.status)}</span><h2>${escapeHtml(d.headline)}</h2><span class="claim-ref">${escapeHtml(d.claimId)}</span></div>${reasons}${duplicate}<div class="decision-meta"><span>Processed in ${d.processingTimeMs} ms</span><span>Correlation ${escapeHtml(d.correlationId.slice(0, 8))}</span></div></div>`;
 }
 
 function escapeHtml(value) {

@@ -17,7 +17,17 @@ class ClaimControllerTest {
     @Test void reportsStructuredValidationErrors() throws Exception {
         mvc.perform(post("/api/v1/claims/adjudicate").contentType("application/json")
             .content("""{"claimId":"bad","memberId":"","providerId":"","procedureCode":"","serviceDate":"2099-01-01","amount":0}"""))
-            .andExpect(status().isBadRequest()).andExpect(jsonPath("$.error").value("Validation failed"))
-            .andExpect(jsonPath("$.fields.claimId").exists()).andExpect(jsonPath("$.fields.amount").exists());
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType("application/problem+json"))
+            .andExpect(jsonPath("$.title").value("Request validation failed"))
+            .andExpect(jsonPath("$.errors.claimId").exists()).andExpect(jsonPath("$.errors.amount").exists())
+            .andExpect(jsonPath("$.correlationId").exists());
+    }
+
+    @Test void reportsMalformedJsonAsAProblem() throws Exception {
+        mvc.perform(post("/api/v1/claims/adjudicate").contentType("application/json").content("{bad"))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType("application/problem+json"))
+            .andExpect(jsonPath("$.type").value("https://api.claimcheck.example/problems/malformed-request"));
     }
 }
