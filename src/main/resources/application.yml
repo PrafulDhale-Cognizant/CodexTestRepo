@@ -3,6 +3,16 @@ spring:
     name: claim-check
   jackson:
     default-property-inclusion: non_null
+claim-check:
+  shadow:
+    enabled: true
+    rule-version: java-rules-2026.07
+    parity:
+      # A window is one complete UTC production day.
+      minimum-agreement-percent: 99.5
+      minimum-evaluations-per-window: 10000
+      required-consecutive-windows: 14
+      require-representative-traffic: true
 management:
   endpoints:
     web:

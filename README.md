@@ -44,3 +44,27 @@ docker build -t claim-check .
 ```
 
 Spring Boot Actuator exposes `/actuator/health` for deployment probes.
+
+## COBOL-to-Java shadow operation
+
+The COBOL adapter remains the only authoritative decision source. For every adjudication, shadow mode also
+invokes the candidate Java rules and records an allow-listed comparison. The comparison contains only the
+random correlation ID, dispositions, reason codes and their set differences, mismatch category, Java rule
+version, and UTC evaluation timestamp. It never contains claim/member/provider identifiers, service dates,
+amounts, duplicate details, or human-readable reason text. A Java exception is isolated from the response and
+recorded as a `DEFECT`; the COBOL disposition is still returned.
+
+Differences are operationally triaged as:
+
+* `EXPECTED_REPRESENTATION_DIFFERENCE` — dispositions agree but reason-code representation differs.
+* `RULE_DIFFERENCE` — dispositions disagree under the same data snapshot.
+* `DATA_TIMING_DIFFERENCE` — dispositions disagree and a `DATA-*` or `TIMING-*` reason identifies snapshot lag.
+* `DEFECT` — the Java evaluation cannot complete. Exact agreement is recorded as `NONE`.
+
+Java decisions must **not** be enabled until the readiness gate passes on representative production traffic:
+at least **99.5% exact disposition-and-reason-code agreement**, across at least **10,000 evaluations per complete
+UTC-day window**, for **14 consecutive daily windows**. Traffic must cover the production mix of benefit plans,
+claim types, dispositions, amounts, providers, service-date ages, and known edge cases; representativeness is
+validated using aggregate distributions outside the PHI-free comparison event. Any failed or undersized window
+resets the sustained-window count. Promotion also requires normal change approval and rollback readiness; the
+threshold is necessary, not by itself sufficient. These controls are configured under `claim-check.shadow.parity`.
