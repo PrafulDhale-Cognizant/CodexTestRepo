@@ -12,16 +12,32 @@ import java.util.*;
 @Service
 public class AdjudicationService {
     private static final BigDecimal REVIEW_LIMIT = new BigDecimal("5000.00");
+    private final DuplicateClaimService duplicateClaimService;
     private final List<LegacyClaim> legacyClaims = List.of(
         new LegacyClaim("CLM-902184", "MBR-10482", "PRV-4481", "99213", LocalDate.of(2026, 7, 18), new BigDecimal("185.00")),
         new LegacyClaim("CLM-775091", "MBR-22019", "PRV-2204", "70553", LocalDate.of(2026, 7, 2), new BigDecimal("2400.00")),
         new LegacyClaim("CLM-881426", "MBR-10482", "PRV-4481", "80053", LocalDate.of(2026, 6, 21), new BigDecimal("96.40"))
     );
 
+    public AdjudicationService(DuplicateClaimService duplicateClaimService) {
+        this.duplicateClaimService = duplicateClaimService;
+    }
+
     public ClaimDecision adjudicate(ClaimRequest request) {
+        return adjudicate(request, null);
+    }
+
+    public ClaimDecision adjudicate(ClaimRequest request, String idempotencyKey) {
         long start = System.nanoTime();
         List<DecisionReason> reasons = new ArrayList<>();
         DuplicateMatch duplicate = findDuplicate(request);
+        if (duplicate == null) {
+            DuplicateClaimService.Registration registration = duplicateClaimService.register(request, idempotencyKey);
+            if (!registration.accepted()) {
+                duplicate = new DuplicateMatch(registration.registeredClaimId(), "EXACT", 100,
+                    request.serviceDate().toString(), request.amount().stripTrailingZeros().toPlainString());
+            }
+        }
         Status status;
         String headline;
 

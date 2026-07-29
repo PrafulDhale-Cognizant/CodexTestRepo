@@ -15,5 +15,10 @@ public class ClaimController {
 
     @PostMapping("/adjudicate")
     @ResponseStatus(HttpStatus.OK)
-    public ClaimDecision adjudicate(@Valid @RequestBody ClaimRequest claim) { return service.adjudicate(claim); }
+    public ClaimDecision adjudicate(
+        @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
+        @Valid @RequestBody ClaimRequest claim
+    ) {
+        return service.adjudicate(claim, idempotencyKey);
+    }
 }

@@ -14,6 +14,10 @@ Open <http://localhost:8080>. The pre-filled example matches `CLM-902184` in the
 
 `POST /api/v1/claims/adjudicate`
 
+Clients may send an `Idempotency-Key` header (up to 200 characters). Repeating the same
+request with that key returns the original accepted decision; reusing the key for different
+claim details returns HTTP 409.
+
 ```json
 {
   "claimId": "CLM-542890",
@@ -34,6 +38,10 @@ Every response includes a decision status, coded reasons, processing time, times
 3. Other valid claims pass pre-adjudication.
 
 These deliberately small, deterministic rules mirror the supplied hackathon scenario and create a clean seam where a production copybook adapter, member eligibility system, and externalized rules engine can be connected.
+
+Accepted submissions are recorded using a SHA-256 fingerprint of those five normalized
+duplicate fields. Database uniqueness makes duplicate detection atomic even when identical
+requests arrive simultaneously.
 
 ## Test and package
 

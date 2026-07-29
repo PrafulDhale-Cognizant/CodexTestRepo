@@ -8,6 +8,18 @@ import java.util.*;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+    @ExceptionHandler(IdempotencyKeyConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    Map<String, Object> idempotencyConflict(IdempotencyKeyConflictException ex) {
+        return Map.of("status", 409, "error", ex.getMessage(), "timestamp", Instant.now());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    Map<String, Object> badRequest(IllegalArgumentException ex) {
+        return Map.of("status", 400, "error", ex.getMessage(), "timestamp", Instant.now());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> invalid(MethodArgumentNotValidException ex) {

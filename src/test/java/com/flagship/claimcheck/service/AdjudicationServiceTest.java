@@ -3,12 +3,15 @@ package com.flagship.claimcheck.service;
 import com.flagship.claimcheck.model.ClaimDecision.Status;
 import com.flagship.claimcheck.model.ClaimRequest;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest
 class AdjudicationServiceTest {
-    private final AdjudicationService service = new AdjudicationService();
+    @Autowired AdjudicationService service;
 
     @Test void deniesAnExactLegacyDuplicate() {
         var claim = claim("CLM-111111", "MBR-10482", "PRV-4481", "99213", "2026-07-18", "185.00");
