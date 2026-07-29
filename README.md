@@ -25,7 +25,16 @@ Open <http://localhost:8080>. The pre-filled example matches `CLM-902184` in the
 }
 ```
 
-Every response includes a decision status, coded reasons, processing time, timestamp, and trace ID. Exact matches also include the existing claim reference and match confidence.
+Every decision response includes the immutable rule-set version (`2026.07.1`), a SHA-256 input fingerprint,
+outcome and coded reasons, evaluated rule IDs, matching claim references, lifecycle timestamps, correlation ID,
+and trace ID. Exact matches also include the existing claim reference and match confidence. Clients may supply a
+safe `X-Correlation-ID`; otherwise the service generates one.
+
+Audit persistence deliberately retains the fingerprint and decision facts rather than the raw request, avoiding
+storage of member and other protected health information. Structured logs likewise contain only audit identifiers
+and outcomes. Micrometer observations create trace boundaries for the controller, eligibility check, duplicate
+query, and persistence. Actuator metrics cover decision outcomes, denial reasons, pended claims, latency, errors,
+and shadow-mode mismatches.
 
 ## Rules in this prototype
 

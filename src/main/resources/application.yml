@@ -4,10 +4,13 @@ spring:
   jackson:
     default-property-inclusion: non_null
 management:
+  tracing:
+    sampling:
+      probability: 1.0
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics,prometheus
 server:
   error:
     include-message: never
